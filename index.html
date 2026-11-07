@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Le labo des liquides</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Patrick+Hand&display=swap">
+<style>
+/* Layout : un cahier de chercheur à grands carreaux ; un niveau = une page ; grosses cibles tactiles. */
+:root{
+  --paper:#fbfcff; --rule:#d9e3f5; --margin:#f0a5a5;
+  --ink:#1d2a44; --soft:#5a6787; --card:#ffffff; --line:#c9d3e6;
+  --accent:#1f7a6b; --accent-ink:#ffffff; --accent-soft:#dcf0eb;
+  --ok:#2e7d32; --ok-soft:#e3f3e4; --ko:#b3361e; --ko-soft:#fbe7e2;
+  --eau:#5aa9e6; --huile:#e8b630; --alcool:#b9a7e8; --grenadine:#d9455f; --vinaigre:#efe7c6; --miel:#b9741f; --paraffine:#f3efe2;
+  --x:#6bbf8a; --y:#e07a3f; --z:#9ec9e8; --p:#c76fb4; --q:#f2cf5b; --r:#8fd3c7;
+  --display:"Patrick Hand","Andika","Comic Sans MS",system-ui,sans-serif;
+  --body:"Andika","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#141b2b; --rule:#22304a; --margin:#5b2f38;
+  --ink:#e8eefb; --soft:#a6b2cc; --card:#1c2538; --line:#33425f;
+  --accent:#4cc2ab; --accent-ink:#0d1a17; --accent-soft:#183a35;
+  --ok:#7ccf80; --ok-soft:#1b3420; --ko:#f08a72; --ko-soft:#3d1f19;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#141b2b; --rule:#22304a; --margin:#5b2f38;
+  --ink:#e8eefb; --soft:#a6b2cc; --card:#1c2538; --line:#33425f;
+  --accent:#4cc2ab; --accent-ink:#0d1a17; --accent-soft:#183a35;
+  --ok:#7ccf80; --ok-soft:#1b3420; --ko:#f08a72; --ko-soft:#3d1f19;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.5;
+  background-image:linear-gradient(90deg,transparent 0,transparent calc(max(16px,env(safe-area-inset-left,0px)) + 18px),var(--margin) calc(max(16px,env(safe-area-inset-left,0px)) + 18px),var(--margin) calc(max(16px,env(safe-area-inset-left,0px)) + 20px),transparent calc(max(16px,env(safe-area-inset-left,0px)) + 20px)),
+  repeating-linear-gradient(180deg,transparent 0,transparent 31px,var(--rule) 31px,var(--rule) 32px)}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-left:28px}
+h1{font-family:var(--display);font-size:clamp(2rem,6vw,2.8rem);line-height:1.05;margin:0;text-wrap:balance}
+.eyebrow{font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--soft);margin:0 0 2px}
+h2{font-family:var(--display);font-size:1.8rem;margin:0;line-height:1.1;text-wrap:balance}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,.slot:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.btn{border:2px solid var(--ink);background:var(--card);border-radius:14px;padding:12px 18px;font-weight:700;min-height:52px}
+.btn:hover{background:var(--accent-soft)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.ghost{border-color:var(--line);font-weight:400}
+.btn[disabled]{opacity:.45;cursor:default}
+.menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:16px;margin-top:22px}
+.level{display:flex;flex-direction:column;gap:6px;text-align:left;background:var(--card);border:2px solid var(--line);border-radius:18px;padding:18px;min-height:150px}
+.level:hover{border-color:var(--accent)}
+.level .num{font-family:var(--display);font-size:1rem;color:var(--soft)}
+.level .name{font-family:var(--display);font-size:1.6rem;line-height:1.1}
+.level .what{color:var(--soft);font-size:.95rem}
+.stars{margin-top:auto;display:flex;gap:4px}
+.stars svg{width:22px;height:22px}
+.intro{margin:18px 0 0 28px;max-width:62ch;color:var(--soft)}
+.screen{margin-top:18px;background:var(--card);border:2px solid var(--line);border-radius:20px;padding:18px clamp(14px,3vw,26px) 22px}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:space-between}
+.progress{display:flex;gap:6px}
+.progress i{width:14px;height:14px;border-radius:50%;border:2px solid var(--line);display:block}
+.progress i.done{background:var(--accent);border-color:var(--accent)}
+.progress i.now{border-color:var(--accent)}
+.consigne{display:flex;gap:12px;align-items:flex-start;margin:14px 0 6px}
+.consigne p{margin:0;font-size:1.25rem;font-weight:700;max-width:60ch}
+.speak{flex:none;width:48px;height:48px;border-radius:50%;border:2px solid var(--accent);background:var(--accent-soft);display:grid;place-items:center}
+.speak svg{width:24px;height:24px;stroke:var(--accent)}
+.scene{display:flex;justify-content:center;margin:8px 0}
+.scene svg{width:100%;max-width:440px;height:auto}
+.choices{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:10px}
+.choices .btn{min-width:150px;font-size:1.1rem}
+.choice.right{background:var(--ok-soft);border-color:var(--ok)}
+.choice.wrong{background:var(--ko-soft);border-color:var(--ko)}
+.feedback{margin-top:14px;border-radius:14px;padding:12px 16px;font-size:1.05rem;display:flex;gap:10px;align-items:flex-start}
+.feedback.ok{background:var(--ok-soft);border:2px solid var(--ok)}
+.feedback.ko{background:var(--ko-soft);border:2px solid var(--ko)}
+.feedback b{display:block}
+.next{display:flex;justify-content:flex-end;margin-top:14px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:14px}
+.mini{border:2px solid var(--line);border-radius:14px;padding:8px;text-align:center;font-size:.95rem}
+.mini svg{width:100%;height:auto}
+.tube-area{display:flex;flex-wrap:wrap;gap:24px;justify-content:center;align-items:flex-end;margin-top:16px}
+.tube{display:flex;flex-direction:column;border:4px solid var(--ink);border-top:none;border-radius:0 0 46px 46px;width:150px;overflow:hidden;background:var(--paper)}
+.slot{height:76px;border-bottom:2px dashed var(--line);display:grid;place-items:center;font-family:var(--display);font-size:1.6rem;background:transparent;border-left:none;border-right:none;border-top:none;width:100%}
+.slot:last-child{border-bottom:none;height:90px}
+.slot.ok{outline:3px solid var(--ok);outline-offset:-6px}
+.slot.ko{outline:3px solid var(--ko);outline-offset:-6px}
+.tags{display:flex;flex-direction:column;gap:10px}
+.tag{width:84px;height:62px;border-radius:12px;border:3px solid var(--ink);font-family:var(--display);font-size:1.7rem}
+.tag.sel{outline:4px solid var(--accent);outline-offset:3px}
+.tag.used{opacity:.3}
+.slotlabels{display:flex;flex-direction:column;justify-content:space-between;height:242px;color:var(--soft);font-size:.9rem;padding-bottom:30px}
+.end{text-align:center;padding:10px 0}
+.end .big{font-family:var(--display);font-size:2.6rem;margin:6px 0}
+.rule{display:inline-block;margin-top:10px;background:var(--accent-soft);border-radius:12px;padding:10px 16px;font-weight:700}
+.muted{color:var(--soft);font-size:.95rem}
+.couple{font-family:var(--display);font-size:1.9rem;text-align:center;margin:6px 0}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <p class="eyebrow">Sciences 6e · investigation 04 bis</p>
+      <h1>Le labo des liquides</h1>
+    </div>
+    <button class="btn ghost" id="home" hidden>Retour aux niveaux</button>
+  </header>
+  <main id="app"></main>
+</div>
+
+<script>
+(function(){
+"use strict";
+var app=document.getElementById("app"), homeBtn=document.getElementById("home");
+var reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+var canSpeak=("speechSynthesis" in window)&&typeof SpeechSynthesisUtterance!=="undefined";
+
+var LIQ={
+  eau:{name:"eau",color:"var(--eau)"}, huile:{name:"huile",color:"var(--huile)"}, alcool:{name:"alcool",color:"var(--alcool)"},
+  grenadine:{name:"sirop de grenadine",color:"var(--grenadine)"}, vinaigre:{name:"vinaigre",color:"var(--vinaigre)"},
+  paraffine:{name:"huile de paraffine",color:"var(--paraffine)"},
+  A:{name:"A",color:"var(--x)"},B:{name:"B",color:"var(--y)"},C:{name:"C",color:"var(--p)"},D:{name:"D",color:"var(--q)"},
+  X:{name:"X",color:"var(--x)"},Y:{name:"Y",color:"var(--y)"},Z:{name:"Z",color:"var(--z)"},
+  P:{name:"P",color:"var(--p)"},Q:{name:"Q",color:"var(--q)"},R:{name:"R",color:"var(--r)"}
+};
+
+/* ---------- mémoire des étoiles (facultative) ---------- */
+function loadStars(){try{return JSON.parse(localStorage.getItem("labo-liquides-stars")||"{}")}catch(e){return {}}}
+function saveStars(s){try{localStorage.setItem("labo-liquides-stars",JSON.stringify(s))}catch(e){}}
+var stars=loadStars();
+
+/* ---------- outils ---------- */
+function el(tag,attrs,html){var e=document.createElement(tag);if(attrs)for(var k in attrs){if(k==="class")e.className=attrs[k];else e.setAttribute(k,attrs[k]);}if(html!=null)e.innerHTML=html;return e}
+function speak(text){if(!canSpeak)return;try{speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(text);u.lang="fr-FR";u.rate=.9;speechSynthesis.speak(u)}catch(e){}}
+var SPEAK_ICON='<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/></svg>';
+function starSvg(on){return '<svg viewBox="0 0 24 24"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2 6.3 20.3l1.2-6.4L2.8 9.5l6.4-.8z" fill="'+(on?"var(--huile)":"none")+'" stroke="var(--ink)" stroke-width="1.4" stroke-linejoin="round"/></svg>'}
+function consigne(text){var c=el("div",{class:"consigne"});if(canSpeak){var b=el("button",{class:"speak","aria-label":"Écouter la consigne",type:"button"},SPEAK_ICON);b.onclick=function(){speak(text)};c.appendChild(b)}c.appendChild(el("p",null,text));return c}
+function feedback(ok,title,text){return el("div",{class:"feedback "+(ok?"ok":"ko"),role:"status"},"<div><b>"+title+"</b>"+text+"</div>")}
+
+/* ---------- dessin : balance de Roberval ---------- */
+function beaker(cx,baseY,liq,vol,w,h){
+  var x=cx-w/2,y=baseY-h,lh=h*0.62;
+  return '<rect x="'+x+'" y="'+(baseY-lh)+'" width="'+w+'" height="'+lh+'" fill="'+LIQ[liq].color+'" opacity=".9"/>'+
+    '<path d="M'+x+' '+y+' V'+baseY+' H'+(x+w)+' V'+y+'" fill="none" stroke="var(--ink)" stroke-width="2.5"/>'+
+    '<line x1="'+(x+w-10)+'" y1="'+(baseY-lh)+'" x2="'+(x+w)+'" y2="'+(baseY-lh)+'" stroke="var(--ink)" stroke-width="1.5"/>'+
+    '<text x="'+cx+'" y="'+(baseY-lh/2+7)+'" text-anchor="middle" font-family="var(--display)" font-size="'+(w>40?20:15)+'" fill="#1d2a44">'+(LIQ[liq].name.length<=2?LIQ[liq].name:"")+'</text>';
+}
+function balanceSvg(left,right,angle,opts){
+  opts=opts||{};var W=440,H=opts.small?230:260,px=W/2,py=70,L=150,r=angle*Math.PI/180;
+  var lx=px-L*Math.cos(r),ly=py-L*Math.sin(r),rx=px+L*Math.cos(r),ry=py+L*Math.sin(r);
+  var drop=46,bw=opts.small?44:58,bh=opts.small?46:62;
+  function pan(x,y,liq,vol){var py2=y+drop;return '<line x1="'+(x-34)+'" y1="'+py2+'" x2="'+x+'" y2="'+y+'" stroke="var(--soft)" stroke-width="1.5"/><line x1="'+(x+34)+'" y1="'+py2+'" x2="'+x+'" y2="'+y+'" stroke="var(--soft)" stroke-width="1.5"/>'+
+      beaker(x,py2-2,liq,vol,bw,bh)+
+      '<path d="M'+(x-48)+' '+py2+' Q'+x+' '+(py2+18)+' '+(x+48)+' '+py2+' Z" fill="var(--card)" stroke="var(--ink)" stroke-width="2.5"/>'+
+      '<text x="'+x+'" y="'+(py2+44)+'" text-anchor="middle" font-family="var(--body)" font-weight="700" font-size="17" fill="var(--ink)">'+LIQ[liq].name+'</text>'+
+      (vol?'<text x="'+x+'" y="'+(py2+64)+'" text-anchor="middle" font-family="var(--body)" font-size="15" fill="var(--soft)">'+vol+'</text>':'');}
+  return '<svg viewBox="0 0 '+W+' '+(H+40)+'" role="img" aria-label="Balance : '+LIQ[left].name+' à gauche, '+LIQ[right].name+' à droite">'+
+    '<path d="M'+(px-60)+' '+(H+30)+' H'+(px+60)+' L'+(px+40)+' '+(H+10)+' H'+(px-40)+' Z" fill="var(--line)" stroke="var(--ink)" stroke-width="2"/>'+
+    '<line x1="'+px+'" y1="'+(H+10)+'" x2="'+px+'" y2="'+py+'" stroke="var(--ink)" stroke-width="5"/>'+
+    '<line x1="'+lx+'" y1="'+ly+'" x2="'+rx+'" y2="'+ry+'" stroke="var(--ink)" stroke-width="6" stroke-linecap="round"/>'+
+    '<circle cx="'+px+'" cy="'+py+'" r="8" fill="var(--accent)" stroke="var(--ink)" stroke-width="2"/>'+
+    pan(lx,ly,left,opts.vol)+pan(rx,ry,right,opts.vol)+'</svg>';
+}
+function animateBalance(holder,left,right,target,opts){
+  if(reduce){holder.innerHTML=balanceSvg(left,right,target,opts);return}
+  var t0=null,dur=1100;holder.innerHTML=balanceSvg(left,right,0,opts);
+  setTimeout(function step(ts){
+    requestAnimationFrame(function f(now){if(t0===null)t0=now;var p=Math.min(1,(now-t0)/dur);var e=1-Math.pow(1-p,3);
+      var wob=p<1?Math.sin(p*9)*(1-p)*3:0;holder.innerHTML=balanceSvg(left,right,target*e+wob,opts);if(p<1)requestAnimationFrame(f)});
+  },350);
+}
+
+/* ---------- dessin : récipients (niveau 2) ---------- */
+function vessel(kind,liq,vol,x){
+  var c=LIQ[liq].color,s="";
+  if(kind==="verre"){s='<path d="M'+(x-48)+' 40 L'+(x-38)+' 190 H'+(x+38)+' L'+(x+48)+' 40" fill="none" stroke="var(--ink)" stroke-width="3"/><path d="M'+(x-46)+' 56 L'+(x-38)+' 188 H'+(x+38)+' L'+(x+46)+' 56 Z" fill="'+c+'" opacity=".9"/>'}
+  else if(kind==="cuillere"){s='<ellipse cx="'+x+'" cy="176" rx="26" ry="12" fill="'+c+'" stroke="var(--ink)" stroke-width="3"/><line x1="'+(x+24)+'" y1="172" x2="'+(x+66)+'" y2="150" stroke="var(--ink)" stroke-width="5" stroke-linecap="round"/>'}
+  else if(kind==="tube"){s='<path d="M'+(x-20)+' 50 V176 a20 20 0 0 0 40 0 V50" fill="none" stroke="var(--ink)" stroke-width="3"/><path d="M'+(x-18)+' 120 V176 a18 18 0 0 0 36 0 V120 Z" fill="'+c+'" opacity=".9"/><line x1="'+(x-26)+'" y1="120" x2="'+(x-14)+'" y2="120" stroke="var(--ink)" stroke-width="2"/>'}
+  else if(kind==="pot"){s='<path d="M'+(x-34)+' 100 V190 H'+(x+34)+' V100" fill="none" stroke="var(--ink)" stroke-width="3"/><rect x="'+(x-32)+'" y="150" width="64" height="38" fill="'+c+'" opacity=".9"/>'}
+  return s+'<text x="'+x+'" y="222" text-anchor="middle" font-family="var(--body)" font-weight="700" font-size="17" fill="var(--ink)">'+LIQ[liq].name+'</text><text x="'+x+'" y="242" text-anchor="middle" font-family="var(--body)" font-size="15" fill="var(--soft)">'+vol+'</text>';
+}
+
+/* ---------- données des niveaux ---------- */
+var L1=[
+  {left:"eau",right:"huile",down:"left",vol:"30 mL"},
+  {left:"A",right:"B",down:"left",vol:"50 mL"},
+  {left:"alcool",right:"huile",down:"right",vol:"30 mL"},
+  {left:"C",right:"D",down:"right",vol:"50 mL"}
+];
+var L2=[
+  {who:"Léo",a:["verre","huile","200 mL"],b:["cuillere","eau","5 mL"],heavy:"huile",fair:false,
+   reasons:["Il n'a pas pris le même volume.","L'huile est grasse.","La balance est cassée."],good:0,
+   fix:"Il doit peser le même volume de chaque liquide, par exemple 30 mL d'huile et 30 mL d'eau."},
+  {who:"Inès",a:["tube","huile","30 mL"],b:["tube","eau","30 mL"],heavy:"eau",fair:true,
+   reasons:["L'huile est jaune.","Elle a pris le même volume des deux liquides.","L'eau est transparente."],good:1,
+   fix:"Même volume : on peut comparer. Pour 30 mL, l'eau est plus lourde que l'huile."},
+  {who:"Sami",a:["verre","alcool","100 mL"],b:["pot","eau","50 mL"],heavy:"alcool",fair:false,
+   reasons:["L'alcool sent fort.","Il y a deux fois plus d'alcool que d'eau.","Le pot est trop petit pour la balance."],good:1,
+   fix:"Il y a deux fois plus d'alcool : ce n'est pas le même volume. Il faut 50 mL de chaque."},
+  {who:"Lina",a:["tube","grenadine","30 mL"],b:["tube","eau","30 mL"],heavy:"grenadine",fair:true,
+   reasons:["Les deux tubes sont remplis jusqu'au même trait.","Le sirop est rouge.","Le sirop est sucré."],good:0,
+   fix:"Même trait, même volume : la comparaison est juste. Pour 30 mL, le sirop pèse plus que l'eau."}
+];
+var L3=[
+  {a:"eau",b:"grenadine",mix:true,why:"L'eau et le sirop sont deux liquides aqueux : ils se mélangent."},
+  {a:"eau",b:"huile",mix:false,why:"L'eau est aqueuse, l'huile est grasse : elles ne se mélangent pas."},
+  {a:"alcool",b:"eau",mix:true,why:"L'alcool à 90° et l'eau sont tous les deux aqueux : ils se mélangent."},
+  {a:"alcool",b:"huile",mix:false,why:"L'alcool est aqueux, l'huile est grasse : ils ne se mélangent pas."},
+  {a:"vinaigre",b:"huile",mix:false,why:"Le vinaigre est aqueux, l'huile est grasse : ils ne se mélangent pas."},
+  {a:"huile",b:"paraffine",mix:true,why:"L'huile de cuisine et l'huile de paraffine sont deux liquides gras : elles se mélangent."}
+];
+var L4=[
+  {liqs:["X","Y","Z"],weigh:[["X","Y","right"],["Y","Z","left"],["X","Z","left"]],order:["Z","X","Y"],
+   why:"Y est en bas parce que j'ai vu son plateau descendre contre X et contre Z. Z est en haut : son plateau monte à chaque fois."},
+  {liqs:["P","Q","R"],weigh:[["P","Q","left"],["Q","R","left"],["P","R","left"]],order:["R","Q","P"],
+   why:"P est en bas parce que son plateau descend contre Q et contre R. R est en haut : il est le plus léger pour le même volume."},
+  {liqs:["eau","huile","alcool"],weigh:[["eau","huile","left"],["huile","alcool","left"],["eau","alcool","left"]],order:["alcool","huile","eau"],
+   why:"C'est notre tour à trois couches : l'eau en bas, l'huile au milieu, l'alcool en haut. Pour le même volume, l'eau est la plus lourde."}
+];
+var LEVELS=[
+  {id:"l1",name:"Lire la balance",what:"Quel plateau descend ? Quel liquide est le plus lourd ?",n:L1.length+1},
+  {id:"l2",name:"Comparaison juste ?",what:"Les élèves ont-ils pesé le même volume ?",n:L2.length},
+  {id:"l3",name:"Se mélange ou pas ?",what:"Aqueux ou gras : est-ce que ça se mélange ?",n:L3.length+1},
+  {id:"l4",name:"La tour inconnue",what:"Lis trois pesées et construis le tube.",n:L4.length}
+];
+
+/* ---------- navigation ---------- */
+var state=null;
+function menu(){
+  homeBtn.hidden=true;state=null;app.innerHTML="";
+  app.appendChild(el("p",{class:"intro"},"Quatre niveaux pour s'entraîner sur ce qu'on a découvert : <b>pour comparer deux liquides, on prend le même volume</b>. Le plateau qui descend porte le plus lourd."));
+  var m=el("div",{class:"menu"});
+  LEVELS.forEach(function(lv,i){
+    var s=stars[lv.id]||0,st="";for(var k=0;k<3;k++)st+=starSvg(k<s);
+    var b=el("button",{class:"level",type:"button"},'<span class="num">Niveau '+(i+1)+'</span><span class="name">'+lv.name+'</span><span class="what">'+lv.what+'</span><span class="stars" aria-label="'+s+' étoiles sur 3">'+st+'</span>');
+    b.onclick=function(){start(i)};m.appendChild(b);
+  });
+  app.appendChild(m);
+}
+function start(i){state={lv:i,step:0,good:0,firstTry:true};homeBtn.hidden=false;render()}
+homeBtn.onclick=function(){if(canSpeak)try{speechSynthesis.cancel()}catch(e){};menu()};
+
+function frame(){
+  var lv=LEVELS[state.lv];app.innerHTML="";
+  var s=el("section",{class:"screen"});
+  var top=el("div",{class:"top"});top.appendChild(el("h2",null,"Niveau "+(state.lv+1)+" · "+lv.name));
+  var p=el("div",{class:"progress","aria-label":"Question "+(state.step+1)+" sur "+lv.n});
+  for(var k=0;k<lv.n;k++)p.appendChild(el("i",{class:k<state.step?"done":(k===state.step?"now":"")}));
+  top.appendChild(p);s.appendChild(top);app.appendChild(s);return s;
+}
+function nextBtn(label,fn){var d=el("div",{class:"next"});var b=el("button",{class:"btn primary",type:"button"},label||"Suivant");b.onclick=fn;d.appendChild(b);setTimeout(function(){b.focus()},30);return d}
+function advance(){if(state.firstTry)state.good++;state.step++;state.firstTry=true;render()}
+function mark(ok){if(!ok)state.firstTry=false}
+
+function choiceRow(options,correctIdx,onRight,onWrongMsg,host){
+  var row=el("div",{class:"choices"}),fb=el("div");host.appendChild(row);host.appendChild(fb);
+  options.forEach(function(o,i){var b=el("button",{class:"btn choice",type:"button"},o);
+    b.onclick=function(){
+      if(i===correctIdx){mark(true);b.classList.add("right");Array.prototype.forEach.call(row.children,function(c){c.disabled=true});fb.innerHTML="";onRight(fb)}
+      else{mark(false);b.classList.add("wrong");b.disabled=true;fb.innerHTML="";fb.appendChild(feedback(false,"Regarde encore.",onWrongMsg(i)))}
+    };row.appendChild(b)});
+}
+
+function render(){
+  var lv=LEVELS[state.lv];
+  if(state.step>=lv.n)return finish();
+  ({0:r1,1:r2,2:r3,3:r4})[state.lv]();
+}
+
+/* Niveau 1 */
+function r1(){
+  var s=frame();
+  if(state.step===L1.length){
+    var t="Complète la règle : sur une balance, le plateau qui descend porte le liquide le plus…";
+    s.appendChild(consigne(t));
+    choiceRow(["lourd","léger"],0,function(fb){fb.appendChild(feedback(true,"Oui !","Le plateau qui descend porte le plus lourd. Le plateau qui monte porte le plus léger."));s.appendChild(nextBtn("Voir mon score",advance))},
+      function(){return "Pense à tes mains : celle qui porte le plus lourd descend."},s);return;
+  }
+  var q=L1[state.step],ang=q.down==="left"?-10:10,heavy=q.down==="left"?q.left:q.right,light=q.down==="left"?q.right:q.left;
+  var t1="On a posé "+q.vol+" de "+LIQ[q.left].name+" et "+q.vol+" de "+LIQ[q.right].name+". Quel liquide est le plus lourd pour le même volume ?";
+  s.appendChild(consigne(t1));
+  var sc=el("div",{class:"scene"});s.appendChild(sc);animateBalance(sc,q.left,q.right,ang,{vol:q.vol});
+  var zone=el("div");s.appendChild(zone);
+  choiceRow([LIQ[q.left].name,LIQ[q.right].name],q.left===heavy?0:1,function(fb){
+    fb.appendChild(feedback(true,"Juste !","J'ai vu que le plateau de "+LIQ[heavy].name+" descend : pour le même volume, "+LIQ[heavy].name+" est plus lourd."));
+    var t2="On verse les deux liquides dans un même tube. Ils ne se mélangent pas. Lequel sera en bas ?";
+    var z2=el("div");zone.appendChild(z2);z2.appendChild(consigne(t2));
+    choiceRow([LIQ[q.left].name,LIQ[q.right].name],q.left===heavy?0:1,function(fb2){
+      fb2.appendChild(feedback(true,"Bravo !",LIQ[heavy].name+" va en bas du tube, parce qu'il est le plus lourd pour le même volume."));z2.appendChild(nextBtn(null,advance))},
+      function(){return "Le liquide le plus lourd pour le même volume va en bas du tube."},z2);
+  },function(i){return "Le plateau de "+LIQ[light].name+" est <b>en haut</b> : il porte le plus léger. Le plateau qui descend porte le plus lourd."},zone);
+}
+
+/* Niveau 2 */
+function r2(){
+  var s=frame(),q=L2[state.step];
+  var t=q.who+" pèse "+q.a[2]+" de "+LIQ[q.a[1]].name+" et "+q.b[2]+" de "+LIQ[q.b[1]].name+". Il dit : le plus lourd, c'est "+LIQ[q.heavy].name+". Est-ce une comparaison juste ?";
+  s.appendChild(consigne(t));
+  s.appendChild(el("div",{class:"scene"},'<svg viewBox="0 0 440 250" role="img" aria-label="'+q.a[2]+' de '+LIQ[q.a[1]].name+' et '+q.b[2]+' de '+LIQ[q.b[1]].name+'">'+vessel(q.a[0],q.a[1],q.a[2],130)+vessel(q.b[0],q.b[1],q.b[2],310)+'</svg>'));
+  var z=el("div");s.appendChild(z);
+  choiceRow(["Oui, c'est juste","Non, ce n'est pas juste"],q.fair?0:1,function(fb){
+    var z2=el("div");z.appendChild(z2);z2.appendChild(consigne("Pourquoi ?"));
+    choiceRow(q.reasons,q.good,function(fb2){fb2.appendChild(feedback(true,"C'est ça !",q.fix));z2.appendChild(nextBtn(null,advance))},
+      function(){return "Regarde les volumes écrits sous chaque récipient."},z2);
+  },function(){return "Compare les deux volumes écrits sous les récipients. Sont-ils pareils ?"},z);
+}
+
+/* Niveau 3 */
+function r3(){
+  var s=frame();
+  if(state.step===L3.length){
+    var t="Savoir si un liquide est aqueux ou gras, ça m'aide à répondre à quelle question ?";
+    s.appendChild(consigne(t));
+    choiceRow(["Est-ce que les liquides se mélangent ?","Quel liquide sera au-dessus ?"],0,function(fb){
+      fb.appendChild(feedback(true,"Exactement !","Aqueux ou gras dit si ça se mélange. Pour savoir qui est au-dessus, on compare ce que pèse un même volume, avec la balance."));
+      s.appendChild(nextBtn("Voir mon score",advance))},
+      function(){return "Souviens-toi de l'alcool : il est aqueux comme l'eau, et pourtant l'huile coule dedans. Aqueux ou gras ne dit pas qui est au-dessus."},s);return;
+  }
+  var q=L3[state.step];
+  s.appendChild(consigne("On verse "+LIQ[q.a].name+" et "+LIQ[q.b].name+" dans un verre et on remue. Est-ce que ça se mélange ?"));
+  s.appendChild(el("p",{class:"couple"},LIQ[q.a].name+" + "+LIQ[q.b].name));
+  choiceRow(["Ça se mélange","Ça ne se mélange pas"],q.mix?0:1,function(fb){fb.appendChild(feedback(true,"Juste !",q.why));s.appendChild(nextBtn(null,advance))},
+    function(){return "Demande-toi : chaque liquide est-il aqueux (comme l'eau) ou gras (comme l'huile) ?"},s);
+}
+
+/* Niveau 4 */
+function r4(){
+  var s=frame(),q=L4[state.step];
+  s.appendChild(consigne("Les trois liquides ne se mélangent pas. On a pesé le même volume de chaque, deux par deux. Place-les dans le tube : touche une étiquette, puis une place."));
+  var cards=el("div",{class:"cards"});
+  q.weigh.forEach(function(w){var c=el("div",{class:"mini"},balanceSvg(w[0],w[1],w[2]==="left"?-10:10,{small:true,vol:"30 mL"}));cards.appendChild(c)});
+  s.appendChild(cards);
+  var area=el("div",{class:"tube-area"}),tags=el("div",{class:"tags"}),labels=el("div",{class:"slotlabels"},"<span>en haut</span><span>au milieu</span><span>en bas</span>"),tube=el("div",{class:"tube","aria-label":"Tube à remplir"});
+  var placed=[null,null,null],sel=null,tagBtns={};
+  q.liqs.forEach(function(l){var b=el("button",{class:"tag",type:"button",style:"background:"+LIQ[l].color+";color:#1d2a44"},LIQ[l].name.length>2?LIQ[l].name.slice(0,1).toUpperCase()+LIQ[l].name.slice(1):LIQ[l].name);
+    if(LIQ[l].name.length>2){b.style.fontSize="1rem";b.style.width="96px"}
+    b.onclick=function(){if(b.classList.contains("used"))return;sel=l;Object.keys(tagBtns).forEach(function(k){tagBtns[k].classList.toggle("sel",k===l)})};tagBtns[l]=b;tags.appendChild(b)});
+  var slots=[];
+  for(var k=0;k<3;k++)(function(k){var sl=el("button",{class:"slot",type:"button","aria-label":["place du haut","place du milieu","place du bas"][k]});
+    sl.onclick=function(){
+      if(sel){var old=placed.indexOf(sel);if(old>-1){placed[old]=null}if(placed[k]){tagBtns[placed[k]].classList.remove("used")}placed[k]=sel;tagBtns[sel].classList.add("used");tagBtns[sel].classList.remove("sel");sel=null}
+      else if(placed[k]){tagBtns[placed[k]].classList.remove("used");placed[k]=null}
+      draw();
+    };slots.push(sl);tube.appendChild(sl)})(k);
+  function draw(){slots.forEach(function(sl,k){sl.classList.remove("ok","ko");var l=placed[k];sl.style.background=l?LIQ[l].color:"transparent";sl.textContent=l?(LIQ[l].name.length>2?LIQ[l].name:l):"";sl.style.color="#1d2a44";sl.style.fontSize=l&&LIQ[l].name.length>2?"1.1rem":"1.6rem"});check.disabled=placed.indexOf(null)>-1}
+  area.appendChild(tags);area.appendChild(labels);area.appendChild(tube);s.appendChild(area);
+  var fbz=el("div");var row=el("div",{class:"choices"});var check=el("button",{class:"btn primary",type:"button",disabled:"disabled"},"Vérifier mon tube");row.appendChild(check);s.appendChild(row);s.appendChild(fbz);
+  check.onclick=function(){var ok=true;slots.forEach(function(sl,k){var good=placed[k]===q.order[k];sl.classList.add(good?"ok":"ko");if(!good)ok=false});
+    fbz.innerHTML="";
+    if(ok){mark(true);check.disabled=true;Array.prototype.forEach.call(slots,function(x){x.disabled=true});fbz.appendChild(feedback(true,"Ton tube est juste !",q.why));s.appendChild(nextBtn(null,advance))}
+    else{mark(false);fbz.appendChild(feedback(false,"Pas encore.","Les places entourées en rouge sont à changer. Cherche le liquide dont le plateau descend à chaque fois : c'est lui qui va en bas."))}
+  };
+  draw();
+}
+
+/* Fin de niveau */
+function finish(){
+  var lv=LEVELS[state.lv],n=lv.n,g=state.good,st=g===n?3:(g>=Math.ceil(n*0.6)?2:(g>0?1:0));
+  if(st>(stars[lv.id]||0)){stars[lv.id]=st;saveStars(stars)}
+  app.innerHTML="";var s=el("section",{class:"screen end"});
+  var row="";for(var k=0;k<3;k++)row+=starSvg(k<st);
+  s.innerHTML='<h2>Niveau '+(state.lv+1)+' terminé</h2><div class="stars" style="justify-content:center;margin-top:10px" aria-label="'+st+' étoiles sur 3">'+row.replace(/width="22"/g,"")+'</div><p class="big">'+g+' / '+n+'</p><p class="muted">réponses justes du premier coup</p><p class="rule">Pour comparer deux liquides, je prends le même volume.<br>Le plateau qui descend porte le plus lourd.</p>';
+  var r=el("div",{class:"choices"});
+  var again=el("button",{class:"btn",type:"button"},"Recommencer ce niveau");again.onclick=function(){start(state.lv)};r.appendChild(again);
+  if(state.lv<LEVELS.length-1){var nx=el("button",{class:"btn primary",type:"button"},"Niveau suivant");var nlv=state.lv+1;nx.onclick=function(){start(nlv)};r.appendChild(nx)}
+  var mb=el("button",{class:"btn ghost",type:"button"},"Tous les niveaux");mb.onclick=menu;r.appendChild(mb);
+  s.appendChild(r);app.appendChild(s);
+  s.querySelectorAll(".stars svg").forEach(function(x){x.style.width="40px";x.style.height="40px"});
+}
+
+menu();
+})();
+</script>
+</body>
+</html>
